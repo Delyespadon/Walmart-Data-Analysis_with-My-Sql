@@ -35,24 +35,309 @@ This project is an end-to-end data analysis solution designed to extract critica
    - **Verification**: Run initial SQL queries to confirm that the data has been loaded accurately.
 
 ### 7. SQL Analysis: Complex Queries and Business Problem Solving
-   - **Business Problem-Solving**: Write and execute complex SQL queries to answer critical business questions, such as:
-    1)  **1. Analyze Customer Loyalty by Payment Method**
-'''sql
+  ## Business Problems and Solutions
+
+
+ ### 1.  Analyze Payment Methods and Sales 
+ **Question:** What are the different payment methods, and how many transactions and 
+items were sold with each method? 
+```sql
+SELECT 
+    payment_method,
+    COUNT(payment_method) AS total_transaction,
+    SUM(quantity) AS items_sold
+FROM
+    walmart
+GROUP BY 1
+ORDER BY 3;
+```
+**Purpose:** This helps understand customer preferences for payment methods, aiding in 
+payment optimization strategies
+
+### 2. Analyze Customer Loyalty by Payment Method
+**Question:** How many transactions per customer are recorded for each payment method?
+```sql
 SELECT 
     payment_method, customer_id, COUNT(*) AS transaction_count
 FROM
     sales
 GROUP BY payment_method , customer_id
 ORDER BY transaction_count DESC;
-'''
-     - Identifying best-selling product categories.
-     - Sales performance by time, city, and payment method.
-     - Analyzing peak sales periods and customer buying patterns.
-     - Profit margin analysis by branch and category.
+```
+**Purpose:** Understand which payment methods correlate with higher customer loyalty?
+
+  ### 3. Identify the Highest-Rated Category in Each Branch
+  **Question:** Which category received the highest average rating in each branch?
+```sql
+SELECT 
+    category,
+    ROUND(AVG(rating), 3) AS average_rating_per_category
+FROM
+    walmart
+GROUP BY 1
+ORDER BY 2 DESC;
+```
+**Purpose:** This allows Walmart to recognize and promote popular categories in specific 
+branches, enhancing customer satisfaction and branch-specific marketing. 
+
+### 4 Identify Underperforming Categories Across Branches
+**Question:** Which categories have the lowest total sales and profit margins?
+```sql
+SELECT 
+    category,
+    SUM(unit_price * quantity) AS total_sales,
+    AVG(profit_margin) AS avg_profit_margin
+FROM
+    sales
+GROUP BY category
+ORDER BY total_sales ASC , avg_profit_margin ASC
+LIMIT 5;
+```
+**Purpose:**  Identify product categories that may need new marketing strategies or promotions
+### 5. Determine the Busiest Day for Each Branch
+**Question:**  What is the busiest day of the week for each branch based on transaction volume?
+```sql
+SELECT 
+    Branch,
+    DAYNAME(date) AS day_of_week,
+    COUNT(invoice_id) AS transaction_count
+FROM
+    walmart
+GROUP BY 1 , 2
+ORDER BY 1 , 3 DESC;
+```
+**Purpose:** This insight helps in optimizing staffing and inventory management to 
+accommodate peak days. 
+
+### 6 Evaluate Sales Contribution by Time of Year
+**Question:** What are the total sales during holidays, weekends, and weekdays?
+``` sql
+SELECT 
+    CASE
+        WHEN DAYOFWEEK(date) IN (1 , 7) THEN 'Weekend'
+        ELSE 'Weekday'
+    END AS day_type,
+    SUM(unit_price * quantity) AS total_sales
+FROM
+    sales
+GROUP BY day_type;
+```
+**Purpose:** Determine periods with high and low sales activity for targeted promotions.
+
+### 7 Calculate Total Quantity Sold by Payment Method
+**Question:** How many items were sold through each payment method?
+```sql
+SELECT 
+    payment_method, SUM(quantity) AS items_sold
+FROM
+    walmart
+GROUP BY 1
+ORDER BY 2;
+```
+**Purpose:**  This helps Walmart track sales volume by payment type, providing insights 
+into customer purchasing habits
+
+
+### 8. Analyze Sales Shifts Throughout the Day
+ **Question:** How many transactions occur in each shift (Morning, Afternoon, Evening) across branches?
+```sql
+SELECT 
+    branch,
+    CASE
+        WHEN HOUR(time) < 12 THEN 'Morning'
+        WHEN HOUR(time) BETWEEN 12 AND 17 THEN 'Afternoon'
+        ELSE 'Evening'
+    END AS shifts,
+    COUNT(*) AS Transaction_per_shift
+FROM
+    walmart
+GROUP BY 1 , 2
+ORDER BY 1 , 3;
+```
+**Purpose:** Understand which payment methods are most profitable
+
+### 9 Analyze Profitability by Payment Method
+**Question:** Which payment method yields the highest average profit per transaction?
+```sql
+SELECT 
+    payment_method,
+    AVG(unit_price * quantity * profit_margin) AS avg_profit
+FROM
+    sales
+GROUP BY payment_method
+ORDER BY avg_profit DESC;
+```
+### 10 . Analyze Category Ratings by City
+**Question:** What are the average, minimum, and maximum ratings for each category in each city?
+```sql
+SELECT 
+    city,
+    category,
+    ROUND(AVG(rating), 3) AS average_rating,
+    MIN(rating) AS minimum_rating,
+    MAX(rating) AS maximum_rating
+FROM
+    walmart
+GROUP BY 1 , 2;
+```
+**Purpose:** This data can guide city-level promotions, allowing Walmart to address 
+regional preferences and improve customer experiences. 
+
+ ### 11 Assess Customer Satisfaction by Shift
+**Question:** What is the average customer rating for morning, afternoon, and evening shifts?
+```sql
+SELECT 
+    CASE
+        WHEN HOUR(time) BETWEEN 6 AND 12 THEN 'Morning'
+        WHEN HOUR(time) BETWEEN 13 AND 18 THEN 'Afternoon'
+        ELSE 'Evening'
+    END AS shift,
+    AVG(rating) AS avg_rating
+FROM
+    sales
+GROUP BY shift;
+```
+**Purpose:** Helps evaluate if staff performance or peak-hour issues affect customer satisfaction.
+
+### 12. Calculate Total Profit by Category
+**Question:** What is the total profit for each category, ranked from highest to lowest?
+```sql
+SELECT 
+    category,
+    ROUND(SUM((unit_price * profit_margin * quantity)),
+            3) AS profit_per_category
+FROM
+    walmart
+GROUP BY 1
+ORDER BY 2 DESC;
+```
+**Purpose:** Identifying high-profit categories helps focus efforts on expanding these  products or managing pricing strategies effectively. 
+
+### Track Repeat Purchases by Category 
+**13 Question: Which product categories have the highest rate of repeat purchases?**
+```sql
+SELECT category, COUNT(DISTINCT customer_id) AS unique_customers, COUNT(*) AS total_purchases
+FROM sales
+GROUP BY category
+ORDER BY total_purchases DESC;
+```
+**Purpose:** Helps Walmart identify customer favorites and drive loyalty programs
+
+### 14 Compare Sales-to-Profit Ratios Across Branches
+**Question:** What is the sales-to-profit ratio for each branch?
+```sql
+SELECT 
+    branch,
+    SUM(unit_price * quantity) AS total_sales,
+    SUM(unit_price * quantity * profit_margin) AS total_profit,
+    (SUM(unit_price * quantity * profit_margin) / SUM(unit_price * quantity)) * 100 AS sales_to_profit_ratio
+FROM
+    sales
+GROUP BY branch
+ORDER BY sales_to_profit_ratio DESC;
+```
+**Purpose:** This information aids in understanding branch-specific payment preferences, potentially allowing branches to streamline their payment processing systems. 
+
+### 15. Determine the Most Common Payment Method per Branch
+**Question:** What is the most frequently used payment method in each branch?  
+```sql
+WITH CTE AS (
+    SELECT 
+        branch, 
+        payment_method, 
+        COUNT(*) AS payment_count,  
+        RANK() OVER (PARTITION BY branch ORDER BY COUNT(*) DESC) AS rk 
+    FROM walmart
+    GROUP BY branch, payment_method
+)
+SELECT branch, payment_method
+FROM CTE
+WHERE rk = 1;-- Select the most frequent payment method(s) per branch
+
+SELECT 
+    CASE
+        WHEN is_promotion = 1 THEN 'Promotion'
+        ELSE 'Non-Promotion'
+    END AS period_type,
+    SUM(unit_price * quantity) AS total_sales
+FROM
+    sales
+GROUP BY period_type;
+```
+**Purpose:** Highlights branches that generate high sales but low profitability, indicating possible cost issues.
+
+### 16. Analyze Sales Shifts Throughout the Day
+**Question:** How many transactions occur in each shift (Morning, Afternoon, Evening) across branches?
+```
+sql
+SELECT 
+    branch,
+    CASE
+        WHEN time IS NULL THEN 'Unknown'
+        WHEN HOUR(TIME(time)) < 12 THEN 'Morning'
+        WHEN HOUR(TIME(time)) = 12 THEN 'Morning'
+        WHEN HOUR(TIME(time)) < 18 THEN 'Afternoon'
+        ELSE 'Evening'
+    END AS shift,
+    COUNT(*) AS invoice_count
+FROM
+    walmart
+GROUP BY branch , shift
+ORDER BY branch , invoice_count DESC;
+```
+**Purpose:** This insight helps in managing staff shifts and stock replenishment schedules, 
+especially during high-sales periods. 
+
+### 17 Analyze Customer Preferences by City
+**Question:** What are the top-selling categories in each city?
+```sql
+SELECT 
+    city, category, SUM(unit_price * quantity) AS total_sales
+FROM
+    sales
+GROUP BY city , category
+ORDER BY city , total_sales DESC;
+```
+**Purpose:** Helps Walmart tailor city-specific inventory and marketing strategies.
+### 18 : Identify the 5 branches with the highest revenue decrease ratio from last year to current year (e.g., 2022 to 2023)
+```sql
+WITH revenue_2022 AS (
+    SELECT
+        branch,
+        SUM(total) AS revenue_2022
+    FROM walmart
+    WHERE YEAR(STR_TO_DATE(date, '%d/%m/%Y')) = 2022
+    GROUP BY branch
+),
+revenue_2023 AS (
+    SELECT
+        branch,
+        SUM(total) AS revenue_2023
+    FROM walmart
+    WHERE YEAR(STR_TO_DATE(date, '%d/%m/%Y')) = 2023
+    GROUP BY branch
+)
+SELECT
+    r2022.branch,
+    r2022.revenue_2022,
+    COALESCE(r2023.revenue_2023, 0) AS revenue_2023,  -- Handle missing 2023 revenue
+    CASE
+        WHEN r2022.revenue_2022 IS NULL OR r2022.revenue_2022 = 0 THEN NULL -- Avoid divide by zero
+        ELSE ROUND(((r2022.revenue_2022 - COALESCE(r2023.revenue_2023, 0)) / r2022.revenue_2022) * 100, 2)
+    END AS revenue_decrease_ratio
+FROM revenue_2022 AS r2022
+LEFT JOIN revenue_2023 AS r2023 ON r2022.branch = r2023.branch
+ORDER BY revenue_decrease_ratio DESC
+LIMIT 5;
+```
+**Purpose:** Detecting branches with declining revenue is crucial for understanding 
+possible local issues and creating strategies to boost sales or mitigate losses.
+
    - **Documentation**: Keep clear notes of each query's objective, approach, and results.
 
 ### 8. Project Publishing and Documentation
-   - **Documentation**: Maintain well-structured documentation of the entire process in Markdown or a mySQL file
+   - **Documentation**: Maintain well-structu
+   - red documentation of the entire process in Markdown or a mySQL file
    - **Project Publishing**: Publish the completed project on GitHub or any other version control platform, including:
      - The `README.md` file (this document).
      - Jupyter Notebooks (if applicable).
