@@ -32,7 +32,80 @@ This project is an end-to-end data analysis solution designed to extract critica
    - **Enhance Dataset**: Adding this calculated field will streamline further SQL analysis and aggregation tasks.
 
 ### 6. Load Data into MySQL and PostgreSQL
-   - **Verification**: Run initial SQL queries to confirm that the data has been loaded accurately.
+ **Verification**
+ ```sql
+-- creation of the database 
+Create database walmartdb;
+
+-- creation of the table 
+CREATE TABLE walmart (
+    invoice_id INT,
+    Branch VARCHAR(50),
+    City VARCHAR(50),
+    category VARCHAR(50),
+    unit_price FLOAT,
+    quantity FLOAT,
+    date VARCHAR(50),
+    time TIME,
+    payment_method VARCHAR(50),
+    rating FLOAT,
+    profit_margin FLOAT,
+    Total_quantity FLOAT
+);
+
+-- Updating the the table so that the date column is in a date type 
+ 
+UPDATE walmart 
+SET 
+    date = CASE
+        WHEN
+            LENGTH(SUBSTRING_INDEX(date, '/', - 1)) = 2
+        THEN
+            CONCAT(SUBSTRING_INDEX(date, '/', 1),
+                    '/',
+                    SUBSTRING_INDEX(SUBSTRING_INDEX(date, '/', 2), '/', - 1),
+                    '/',
+                    CASE
+                        WHEN SUBSTRING_INDEX(date, '/', - 1) = '19' THEN '2019'
+                        WHEN SUBSTRING_INDEX(date, '/', - 1) = '20' THEN '2020'
+                        WHEN SUBSTRING_INDEX(date, '/', - 1) = '21' THEN '2021'
+                        WHEN SUBSTRING_INDEX(date, '/', - 1) = '22' THEN '2022'
+                        WHEN SUBSTRING_INDEX(date, '/', - 1) = '23' THEN '2023'
+                        ELSE SUBSTRING_INDEX(date, '/', - 1)
+                    END)
+        ELSE date
+    END;
+UPDATE walmart 
+SET 
+    date = CASE
+        WHEN
+            date REGEXP '^[0-9]{1,2}/[0-9]{1,2}/[0-9]{4}$'
+        THEN
+            CASE
+                WHEN
+                    CAST(SUBSTRING_INDEX(date, '/', 1) AS UNSIGNED) <= 12
+                        AND CAST(SUBSTRING_INDEX(SUBSTRING_INDEX(date, '/', 2), '/', - 1)
+                        AS UNSIGNED) <= 31
+                THEN
+                    STR_TO_DATE(date, '%m/%d/%Y')
+                ELSE STR_TO_DATE(date, '%d/%m/%Y')
+            END
+    END;
+    
+UPDATE walmart 
+SET 
+    date = CASE
+        WHEN date LIKE '____-__-__' THEN date
+        WHEN
+            date LIKE '__/__/____'
+        THEN
+            CASE
+                WHEN CAST(SUBSTRING_INDEX(date, '/', 1) AS UNSIGNED) <= 12 THEN STR_TO_DATE(date, '%m/%d/%Y')
+                ELSE STR_TO_DATE(date, '%d/%m/%Y')
+            END
+    END;
+ALTER TABLE walmart MODIFY COLUMN date DATE;
+```
 
 ### 7. SQL Analysis: Complex Queries and Business Problem Solving
   ## Business Problems and Solutions
