@@ -407,30 +407,7 @@ LIMIT 5;
 possible local issues and creating strategies to boost sales or mitigate losses.
 
 
-### Findings:
-### Payment Method Preferences
-**Credit Card:** Most used (4,256 transactions, 9,567 items sold).
-**Ewallet:** Second most used (3,881 transactions, 8,932 items sold).
-**Cash:** Least preferred (1,832 transactions, 4,984 items sold).
-### Busiest Sales Days
--Tuesday is the busiest day (1,473 transactions), followed closely by Sunday (1,468 transactions).
-- Monday has the lowest sales activity (1,373 transactions).
-### Underperforming Categories (Low Sales & Profit Margins)
-**Health and Beauty:** Lowest sales (854 units sold) but decent margin (40%).
-**Sports and Travel:** Low sales (920 units sold) and lowest profit margin (38%)
-### Sales Distribution by Shift
-- Morning is the most active shift (9,969 transactions).
-- Afternoon & Evening transactions are missing from the dataset (needs verification).
-
-### Recommendations
-1)  Prioritize Credit Card & Ewallet transactions through discounts or cashback.
-2)  Strengthen Tuesday & Sunday workforce to handle peak demand.
-3)  Expand Food and Beverages marketing in high-rated branches.
-4)  Improve Sports & Travel sales with targeted promotions.
-5)  Investigate Afternoon and Evening sales drop to uncover missing data or trends.
-
-
-   - **Documentation**: Keep clear notes of each query's objective, approach, and results.
+ **Documentation**: Keep clear notes of each query's objective, approach, and results.
 
 ### 8. Project Publishing and Documentation
    - **Documentation**: Maintain well-structu
@@ -441,7 +418,6 @@ possible local issues and creating strategies to boost sales or mitigate losses.
      - SQL query scripts.
      - Data files (if possible) or steps to access them.
 
----
 
 ## Requirements
 
@@ -469,10 +445,27 @@ possible local issues and creating strategies to boost sales or mitigate losses.
 
 ## Results and Insights
 
-This section will include your analysis findings:
-- **Sales Insights**: Key categories, branches with highest sales, and preferred payment methods.
-- **Profitability**: Insights into the most profitable product categories and locations.
-- **Customer Behavior**: Trends in ratings, payment preferences, and peak shopping hours.
+### Findings:
+### Payment Method Preferences
+**Credit Card:** Most used (4,256 transactions, 9,567 items sold).
+**Ewallet:** Second most used (3,881 transactions, 8,932 items sold).
+**Cash:** Least preferred (1,832 transactions, 4,984 items sold).
+### Busiest Sales Days
+-Tuesday is the busiest day (1,473 transactions), followed closely by Sunday (1,468 transactions).
+- Monday has the lowest sales activity (1,373 transactions).
+### Underperforming Categories (Low Sales & Profit Margins)
+**Health and Beauty:** Lowest sales (854 units sold) but decent margin (40%).
+**Sports and Travel:** Low sales (920 units sold) and lowest profit margin (38%)
+### Sales Distribution by Shift
+- Morning is the most active shift (9,969 transactions).
+- Afternoon & Evening transactions are missing from the dataset (needs verification).
+
+### Recommendations
+1)  Prioritize Credit Card & Ewallet transactions through discounts or cashback.
+2)  Strengthen Tuesday & Sunday workforce to handle peak demand.
+3)  Expand Food and Beverages marketing in high-rated branches.
+4)  Improve Sports & Travel sales with targeted promotions.
+5)  Investigate Afternoon and Evening sales drop to uncover missing data or trends.
 
 ## Future Enhancements
 
